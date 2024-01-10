@@ -9,11 +9,15 @@ Uses Semantic Versioning.
 
 - Initial release
 
-## 0.3.0 - 2024-01-09
+## 0.3.0 - 2024-01-10
 
 ### Added
 
 - Format option
+
+### Fixed
+
+- Now properly shrinks tag size when re-tagging a file that previously had a larger tag
 
 ## 0.2.0 - 2024-01-04
 

@@ -1,7 +1,8 @@
 (ns m-tag.core
   (:gen-class)
   (:require [clojure.java.io :as io]
-            [m-tag.util      :as util]))
+            [m-tag.util      :as util])
+  (:import  (org.jaudiotagger.tag TagOptionSingleton)))
 
 ;; A map of valid options and their descriptive strings.
 (def opts-map
@@ -93,9 +94,12 @@
   [& args]
   (let [user-input (validate-args args)]
     (when user-input
-     (let [files     (. (user-input :source) listFiles)
-           end-state (reduce util/process-audio user-input files)]
-       (when-not (some #{"-s"} (user-input :opts))
-         (run! println (end-state :errors)))
-       (println "COMPLETE:" (end-state :tagged) "/" (end-state :total)
-                "files successfully tagged")))))
+      (-> TagOptionSingleton
+          (. getInstance)
+          (. (setId3v2PaddingWillShorten true)))
+      (let [files     (. (user-input :source) listFiles)
+            end-state (reduce util/process-audio user-input files)]
+        (when-not (some #{"-s"} (user-input :opts))
+          (run! println (end-state :errors)))
+        (println "COMPLETE:" (end-state :tagged) "/" (end-state :total)
+                 "files successfully tagged")))))
