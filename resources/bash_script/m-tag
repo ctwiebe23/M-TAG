@@ -1,0 +1,18 @@
+#!/bin/bash
+
+# a simple script that will run the .jar file with the given CLAs, with the 
+# added functionality of allowing you to pass '-' as the filepath to act in the
+# current directory
+
+# to allow use of the 'm-tag' command everywhere, add this file to a folder on
+# the PATH
+
+if [ "$1" = "-" ]; then
+
+  $1="$PWD"
+
+fi
+
+# change the filepath below that precedes the .jar file so that it leads to the
+# correct location
+java -jar ../../target/uberjar/m-tag-1.0.0-SNAPSHOT-standalone.jar "$@"
