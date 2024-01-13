@@ -9,7 +9,7 @@ Currently compatable with .mp3 and .ogg files.
 
 ## Installation
 
-Download from [Download] and run
+Download from [Github] and run
 
     lein uberjar
 
@@ -44,6 +44,6 @@ the Free Software Foundation, either version 2 of the License, or (at your
 option) any later version, with the GNU Classpath Exception which is available
 at [GNU.org].
 
-[Download]: http://example.com/FIXME
+[Github]: http://example.com/FIXME
 [Eclipse.org]: http://www.eclipse.org/legal/epl-2.0
 [GNU.org]: https://www.gnu.org/software/classpath/license.html

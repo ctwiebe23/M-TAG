@@ -25,8 +25,8 @@
   "Prints a formatted error message regarding the given format."
   [message]
   (println "ERROR:" message "\n"
-           " Usage: -f <Splitter> [COMPONANTS] or -f <COMPONANT>\n"
-           "   <Splitter> will be read as a regex.\n"
+           " Usage: -f <Splitter> [COMPONANTS] or -f [COMPONANT]\n"
+           "   <Splitter> will be read as a regex\n"
            " Componants:")
   (run! #(println "   " (first %)) (seq util/componant-map)))
 
@@ -86,9 +86,9 @@
                    (rest args))))
 
 (defn -main
-  "Checks if the given arguments are valid via validate-args, if so then it runs
-   process-audio on each file in the given directory, prints any errors, and 
-   prints a concluding statement.
+  "Checks if the given arguments are valid via validate-args, if so then it 
+   runs process-audio on each file in the given directory, prints any errors, 
+   and prints a concluding statement.
    
    If '-s' present in :opts then it does not print any errors."
   [& args]
