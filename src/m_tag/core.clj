@@ -10,7 +10,7 @@
    "-t" "Execute a test run without edits, printing files and current tags"
    "-v" "Print tag information for each file"
    "-s" "Silence errors"
-   "-f" (str "Change the expected format; must be final option.\n"
+   "-f" (str "Change the expected format; must be final option\n"
              "          Usage: -f <Splitter> [COMPONANTS] or -f <Componant>")})
 
 (defn print-CLA-error
@@ -102,4 +102,5 @@
         (when-not (some #{"-s"} (user-input :opts))
           (run! println (end-state :errors)))
         (println "COMPLETE:" (end-state :tagged) "/" (end-state :total)
-                 "files successfully tagged")))))
+                 "files" (if (some #{"-t"} (user-input :opts)) "passed testing"
+                              "successfully tagged"))))))

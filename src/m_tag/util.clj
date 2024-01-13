@@ -78,15 +78,15 @@
       (.isDirectory file)
       (if-not (some #{"-r"} opts) state
               (reduce process-audio state (. file listFiles)))
+      (not (some #{type} supported-types))
+      (failure state (str "ERROR: Invalid filetype at " path "\n"))
       (not= (count vals) (count comps))
       (failure state (str "ERROR: Invalid naming convention at " path
                           "\n  Usage: " (naming-convention comps) "\n"))
-      (some #{type} supported-types)
+      :else
       (do (when-not (some #{"-t"} opts)
             (set-tag file vals comps))
           (when (some #{"-t" "-v"} opts)
             (print-tag file path comps))
           (merge state {:tagged (inc (state :tagged))
-                        :total  (inc (state :total))}))
-      :else
-      (failure state (str "ERROR: Invalid filetype at " path "\n")))))
+                        :total  (inc (state :total))})))))
