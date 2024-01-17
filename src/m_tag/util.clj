@@ -26,8 +26,7 @@
   (let [audio (AudioFileIO/read file)
         tag   (. audio getTagOrCreateDefault)]
     (println path)
-    (run! #(printf "%s: %s    " % (->> % componant-map getFirst (. tag))) 
-          comps)
+    (run! #(printf "%s: %s    " % (. tag (getFirst (componant-map %)))) comps)
     (println "\n")))
 
 (defn set-tag
@@ -38,8 +37,8 @@
         tag   (. audio getTagOrCreateAndSetDefault)] 
     (loop [i 0]
       (when (< i (count comps))
-        (. tag (setField (-> comps (nth i) componant-map)
-                         (->> (nth vals i) vector (into-array String))))
+        (. tag (setField (componant-map (nth comps i))
+                         (into-array String (vector (vals i)))))
         (recur (inc i))))
     (AudioFileIO/write audio)))
 
@@ -67,12 +66,16 @@
    itself on the given directory, otherwise it returns the given state."
   [{opts :opts comps :comps :as state} file]
   (let [path (str/replace (. file getPath)
-                          (str (. (state :source) getPath) 
-                               java.io.File/separator) 
+                          (-> (state :source)
+                              (. getPath)
+                              (str java.io.File/separator))
                           "")
         name (.getName file)
-        type (-> name (str/split #"\.") last)
-        vals (-> name (str/replace (str "." type) "") 
+        type (-> name 
+                 (str/split #"\.") 
+                 last)
+        vals (-> name 
+                 (str/replace (str "." type) "") 
                  (str/split (state :splitter)))]
     (cond
       (.isDirectory file)
