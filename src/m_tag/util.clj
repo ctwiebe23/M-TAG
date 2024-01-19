@@ -26,7 +26,9 @@
   (let [audio (AudioFileIO/read file)
         tag   (. audio getTagOrCreateDefault)]
     (println path)
-    (run! #(printf "%s: %s    " % (. tag (getFirst (componant-map %)))) comps)
+    (run! #(printf "%s: %s    " 
+                   (str/capitalize %) (. tag (getFirst (componant-map %)))) 
+          comps)
     (println "\n")))
 
 (defn set-tag
@@ -43,8 +45,8 @@
     (AudioFileIO/write audio)))
 
 (defn naming-convention
-  [comps]
-  (str (reduce #(str %1 " - " %2) comps) ".filetype"))
+  [{comps :comps}]
+  (str (str/join " - " (map str/capitalize comps)) ".filetype"))
 
 (defn failure
   [{total :total errors :errors :as state} message]
@@ -85,7 +87,7 @@
       (failure state (str "ERROR: Invalid filetype at " path "\n"))
       (not= (count vals) (count comps))
       (failure state (str "ERROR: Invalid naming convention at " path
-                          "\n  Usage: " (naming-convention comps) "\n"))
+                          "\n  Usage: " (naming-convention state) "\n"))
       :else
       (do (when-not (some #{"-t"} opts)
             (set-tag file vals comps))
