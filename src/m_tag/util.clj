@@ -23,11 +23,13 @@
    then prints the current values of the relevant portions of the file's audio
    tag."
   [file path comps]
-  (let [audio (AudioFileIO/read file)
-        tag   (. audio getTagOrCreateDefault)]
+  (let [audio (AudioFileIO/read file)]
     (println path)
-    (run! #(printf "%s: %s    " 
-                   (str/capitalize %) (. tag (getFirst (componant-map %)))) 
+    (run! #(printf "%s: %s    "
+                   (str/capitalize %)
+                   (.. audio
+                       getTagOrCreateDefault
+                       (getFirst (componant-map %)))) 
           comps)
     (println "\n")))
 
@@ -35,12 +37,15 @@
   "Sets the tag of the given audio file according to the given vals and the
    list of componants defined in tag-format."
   [file vals comps]
-  (let [audio (AudioFileIO/read file)
-        tag   (. audio getTagOrCreateAndSetDefault)] 
+  (let [audio (AudioFileIO/read file)] 
     (loop [i 0]
       (when (< i (count comps))
-        (. tag (setField (componant-map (nth comps i))
-                         (into-array String (vector (vals i)))))
+        (.. audio
+            getTagOrCreateAndSetDefault
+            (setField (componant-map (nth comps i))
+                      (->> (vals i)
+                           vector
+                           (into-array String))))
         (recur (inc i))))
     (AudioFileIO/write audio)))
 

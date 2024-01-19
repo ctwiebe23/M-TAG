@@ -83,7 +83,8 @@
   [args]
   (cond
     (empty? args)
-    (print-CLA-error (str "M'TAG - Tag audio files based on their filenames"
+    (print-CLA-error (str "M'TAG - Tag audio files based on their filenames "
+                          "(i.e. 'Title - Artist.mp3')"
                           "\nDEFAULT FORMAT: splitter: \"" 
                           (initial-state :splitter) "\" componants: " 
                           (initial-state :comps)))
