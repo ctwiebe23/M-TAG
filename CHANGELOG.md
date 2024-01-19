@@ -9,6 +9,16 @@ Uses Semantic Versioning.
 
 - Initial release
 
+## 0.4.0 - 2024-01-19
+
+### Added
+
+- Option to enable JAudioTagger log
+
+### Changed
+
+- Silenced the JAudioTagger log by default
+
 ## 0.3.0 - 2024-01-10
 
 ### Added
