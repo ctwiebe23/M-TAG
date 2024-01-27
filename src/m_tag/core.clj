@@ -99,9 +99,13 @@
    such space is present; also silences the JAudioTagger logger unless '-j' is
    present in :opts."
   [{opts :opts}]
-  (.. TagOptionSingleton getInstance (setId3v2PaddingWillShorten true))
+  (.. TagOptionSingleton 
+      getInstance 
+      (setId3v2PaddingWillShorten true))
   (when-not (some #{"-j"} opts)
-      (.. Logger (getLogger "org.jaudiotagger") (setLevel (. Level OFF)))))
+      (.. Logger 
+          (getLogger "org.jaudiotagger") 
+          (setLevel (. Level OFF)))))
 
 (defn -main
   "Checks if the given arguments are valid via validate-args, if so then it 

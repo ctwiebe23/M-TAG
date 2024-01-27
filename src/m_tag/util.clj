@@ -18,6 +18,10 @@
 (def supported-types
   ["mp3" "wav" "ogg" "flac"])
 
+(defn naming-convention
+  [{comps :comps}]
+  (str (str/join " - " (map str/capitalize comps)) ".filetype"))
+
 (defn print-tag
   "Prints the filepath of the given file relative to the source filepath, and 
    then prints the current values of the relevant portions of the file's audio
@@ -49,9 +53,20 @@
         (recur (inc i))))
     (AudioFileIO/write audio)))
 
-(defn naming-convention
-  [{comps :comps}]
-  (str (str/join " - " (map str/capitalize comps)) ".filetype"))
+(defn get-file-info
+  "Returns a map containing the given file's :path, :type, and :vals."
+  [{source :source splitter :splitter} file]
+  (let [name (.getName file)
+        type (last (str/split name #"\."))]
+    {:path (str/replace (. file getPath)
+                        (-> source
+                            (. getPath)
+                            (str java.io.File/separator))
+                        "")
+     :type type
+     :vals (-> name
+               (str/replace (str "." type) "")
+               (str/split splitter))}))
 
 (defn failure
   [{total :total errors :errors :as state} message]
@@ -72,31 +87,20 @@
    If '-r' present in :opts and the given file is a directory then it runs  
    itself on the given directory, otherwise it returns the given state."
   [{opts :opts comps :comps :as state} file]
-  (let [path (str/replace (. file getPath)
-                          (-> (state :source)
-                              (. getPath)
-                              (str java.io.File/separator))
-                          "")
-        name (.getName file)
-        type (-> name 
-                 (str/split #"\.") 
-                 last)
-        vals (-> name 
-                 (str/replace (str "." type) "") 
-                 (str/split (state :splitter)))]
+  (let [info (get-file-info state file)]
     (cond
       (.isDirectory file)
       (if-not (some #{"-r"} opts) state
               (reduce process-audio state (. file listFiles)))
-      (not (some #{type} supported-types))
-      (failure state (str "ERROR: Invalid filetype at " path "\n"))
-      (not= (count vals) (count comps))
-      (failure state (str "ERROR: Invalid naming convention at " path
+      (not (some #{(info :type)} supported-types))
+      (failure state (str "ERROR: Invalid filetype at " (info :path) "\n"))
+      (not= (count (info :vals)) (count comps))
+      (failure state (str "ERROR: Invalid naming convention at " (info :path)
                           "\n  Usage: " (naming-convention state) "\n"))
       :else
       (do (when-not (some #{"-t"} opts)
-            (set-tag file vals comps))
+            (set-tag file (info :vals) comps))
           (when (some #{"-t" "-v"} opts)
-            (print-tag file path comps))
+            (print-tag file (info :path) comps))
           (merge state {:tagged (inc (state :tagged))
                         :total  (inc (state :total))})))))
