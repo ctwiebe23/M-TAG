@@ -1,6 +1,8 @@
 # Change Log
 
-All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com].
+All notable changes to this project will be documented in this file. This
+change log follows the conventions of [keepachangelog.com].
+
 Uses Semantic Versioning.
 
 ## [1.0.0] - TODO
@@ -27,7 +29,8 @@ Uses Semantic Versioning.
 
 ### Fixed
 
-- Now properly shrinks tag size when re-tagging a file that previously had a larger tag
+- Now properly shrinks tag size when re-tagging a file that previously had a
+  larger tag
 
 ## 0.2.0 - 2024-01-04
 

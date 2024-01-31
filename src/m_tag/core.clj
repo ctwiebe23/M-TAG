@@ -17,13 +17,16 @@
              "\n      "
              "USAGE: -f <splitter (regex)> <componants> or -f <componant>")})
 
+;; Defines the initial program state that will be passed down and iterated on
+;; by util's process-audio function via reduce.
 (def initial-state
-  {:comps    ["title" "artist"]
-   :splitter #" - "
-   :tagged   0
-   :total    0
-   :errors   []
-   :opts     []})
+  {:source   nil                 ;; The directory that process-audio acts in.
+   :opts     []                  ;; The user-specified options.
+   :comps    ["title" "artist"]  ;; The componants that make up the filename.
+   :splitter #" - "              ;; The regex that separates the componants.
+   :tagged   0                   ;; The number of files successfully tagged.
+   :total    0                   ;; The total number of audio files processed.
+   :errors   []})                ;; A collection of errors regarding audio.
 
 (defn print-CLA-error
   "Prints a formatted error message regarding CLA input."
@@ -64,17 +67,17 @@
   "Validates each given option, if successful returns a program state, if 
    unsuccessful prints an error message and returns nil."
   [{current-opts :opts :as state} raw-opts]
-    (loop [untested raw-opts tested []]
-      (cond
-        (empty? untested)
-        (merge state {:opts (conj tested current-opts)})
-        (= "-f" (first untested))
-        (validate-format (merge state {:opts (conj tested current-opts)}) 
-                         (rest untested))
-        (opts-map (first untested))
-        (recur (rest untested) (cons (first untested) tested))
-        :else
-        (print-CLA-error "ERROR: Invalid option given"))))
+  (loop [untested raw-opts tested []]
+    (cond
+      (empty? untested)
+      (merge state {:opts (conj tested current-opts)})
+      (= "-f" (first untested))
+      (validate-format (merge state {:opts (conj tested current-opts)})
+                       (rest untested))
+      (opts-map (first untested))
+      (recur (rest untested) (cons (first untested) tested))
+      :else
+      (print-CLA-error "ERROR: Invalid option given"))))
 
 (defn validate-args
   "Checks if the first argument given is a directory and remaining arguments
@@ -85,13 +88,13 @@
     (empty? args)
     (print-CLA-error (str "M'TAG - Tag audio files based on their filenames "
                           "(i.e. 'Title - Artist.mp3')"
-                          "\nDEFAULT FORMAT: splitter: \"" 
-                          (initial-state :splitter) "\" componants: " 
+                          "\nDEFAULT FORMAT: splitter: \""
+                          (initial-state :splitter) "\" componants: "
                           (initial-state :comps)))
     (not (.isDirectory (io/file (first args))))
     (print-CLA-error "ERROR: Given filepath not valid")
     :else
-    (validate-opts (merge initial-state {:source (io/file (first args))}) 
+    (validate-opts (merge initial-state {:source (io/file (first args))})
                    (rest args))))
 
 (defn configure-jat
@@ -99,13 +102,13 @@
    such space is present; also silences the JAudioTagger logger unless '-j' is
    present in :opts."
   [{opts :opts}]
-  (.. TagOptionSingleton 
-      getInstance 
+  (.. TagOptionSingleton
+      getInstance
       (setId3v2PaddingWillShorten true))
   (when-not (some #{"-j"} opts)
-      (.. Logger 
-          (getLogger "org.jaudiotagger") 
-          (setLevel (. Level OFF)))))
+    (.. Logger
+        (getLogger "org.jaudiotagger")
+        (setLevel (. Level OFF)))))
 
 (defn -main
   "Checks if the given arguments are valid via validate-args, if so then it 
