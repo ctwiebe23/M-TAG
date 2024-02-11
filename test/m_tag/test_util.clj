@@ -22,7 +22,7 @@
       (let [audio (AudioFileIO/read file)
             tag   (. audio getTagOrCreateAndSetDefault)]
         (doseq [componant (seq util/componant-map)]
-          (. tag (deleteField (second componant))))
+          (. tag (deleteField (:FieldKey (second componant)))))
         (AudioFileIO/write audio)))))
 
 (defn clear-tags

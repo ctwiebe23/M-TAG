@@ -3,17 +3,19 @@
   (:import  (org.jaudiotagger.audio AudioFileIO)
             (org.jaudiotagger.tag   FieldKey)))
 
+(defrecord Componant [FieldKey str-size])
+
 ;; Additional fields can be found in the JAudioTagger javadoc.
 (def componant-map
-  {"album"        FieldKey/ALBUM
-   "album_artist" FieldKey/ALBUM_ARTIST
-   "artist"       FieldKey/ARTIST
-   "disc_number"  FieldKey/DISC_NO
-   "total_discs"  FieldKey/DISC_TOTAL
-   "title"        FieldKey/TITLE
-   "track"        FieldKey/TRACK
-   "total_tracks" FieldKey/TRACK_TOTAL
-   "year"         FieldKey/YEAR})
+  {"album"        (Componant. FieldKey/ALBUM        "%-30s")
+   "album_artist" (Componant. FieldKey/ALBUM_ARTIST "%-40s")
+   "artist"       (Componant. FieldKey/ARTIST       "%-40s")
+   "disc_number"  (Componant. FieldKey/DISC_NO      "%-3s")
+   "total_discs"  (Componant. FieldKey/DISC_TOTAL   "%-3s")
+   "title"        (Componant. FieldKey/TITLE        "%-40s")
+   "track"        (Componant. FieldKey/TRACK        "%-3s")
+   "total_tracks" (Componant. FieldKey/TRACK_TOTAL  "%-3s")
+   "year"         (Componant. FieldKey/YEAR         "%-5s")})
 
 (def supported-types
   ["mp3" "wav" "ogg" "flac"])
@@ -26,16 +28,15 @@
   "Prints the filepath of the given file relative to the source filepath, and 
    then prints the current values of the relevant portions of the file's audio
    tag."
-  [file path comps]
+  [file comps]
   (let [audio (AudioFileIO/read file)]
-    (println path)
-    (run! #(printf "%s: %s    "
+    (run! #(printf (str "%s: " (:str-size (componant-map %)))
                    (str/capitalize %)
                    (.. audio
                        getTagOrCreateDefault
-                       (getFirst (componant-map %)))) 
+                       (getFirst (:FieldKey (componant-map %))))) 
           comps)
-    (println "\n")))
+    (println)))
 
 (defn set-tag
   "Sets the tag of the given audio file according to the given vals and the
@@ -46,7 +47,7 @@
       (when (< i (count comps))
         (.. audio
             getTagOrCreateAndSetDefault
-            (setField (componant-map (nth comps i))
+            (setField (:FieldKey (componant-map (nth comps i)))
                       (->> (vals i)
                            vector
                            (into-array String))))
@@ -101,6 +102,24 @@
       (do (when-not (some #{"-t"} opts)
             (set-tag file (info :vals) comps))
           (when (some #{"-t" "-v"} opts)
-            (print-tag file (info :path) comps))
+            (print-tag file comps))
           (merge state {:tagged (inc (state :tagged))
                         :total  (inc (state :total))})))))
+
+;; (defmulti new-process-audio
+;;   "doc"
+;;   #(cond
+;;      (.isDirectory %2) 
+;;      :directory
+;;      (contains? supported-types
+;;                 (-> %2
+;;                     .getName
+;;                     (str/split #".")
+;;                     last)) 
+;;      :supported))
+
+;; (defmethod new-process-audio :directory
+;;   [args])
+
+;; (defmethod new-process-audio :default
+;;  [args])
