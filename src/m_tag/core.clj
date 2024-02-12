@@ -45,7 +45,7 @@
   (run! #(println " " (first %)) (seq util/componant-map)))
 
 (defn validate-format
-  "Takes a program state and a collection of strings representing a format, 
+  "Takes a program state and a collection of strings representing a format,
    then returns a program state including the new format on a success but
    prints an error message and returns nil on a failure."
   [state raw-format]
@@ -64,7 +64,7 @@
     (print-format-error "ERROR: Invalid componant given to -f")))
 
 (defn validate-opts
-  "Validates each given option, if successful returns a program state, if 
+  "Validates each given option, if successful returns a program state, if
    unsuccessful prints an error message and returns nil."
   [{current-opts :opts :as state} raw-opts]
   (loop [untested raw-opts tested []]
@@ -81,7 +81,7 @@
 
 (defn validate-args
   "Checks if the first argument given is a directory and remaining arguments
-   are valid options; returns a program state on a success, prints an error 
+   are valid options; returns a program state on a success, prints an error
    message and returns nil on a failure."
   [args]
   (cond
@@ -111,10 +111,10 @@
         (setLevel (. Level OFF)))))
 
 (defn -main
-  "Checks if the given arguments are valid via validate-args, if so then it 
-   runs process-audio on each file in the given directory, prints any errors, 
+  "Checks if the given arguments are valid via validate-args, if so then it
+   runs process-audio on each file in the given directory, prints any errors,
    and prints a concluding statement.
-   
+
    If '-s' present in :opts then it does not print any errors."
   [& args]
   (let [user-input (validate-args args)]
