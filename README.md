@@ -9,7 +9,7 @@ Compatable with .mp3, .ogg, .wav, and .flac filetypes.
 
 ## Installation
 
-(Requires a Java JDK and [Leiningen])
+(Requires a Java JDK, the Clojure Core, and [Leiningen])
 
 Download from [Github] and run
 
@@ -53,6 +53,14 @@ Can be used anywhere within the project:
 
     $ java -jar m-tag-1.0.0-standalone.jar ../../resources/test_files -v
     =>
+
+## TODO
+
+- [ ] Create `Audio-File` record w/ file & file info
+- [ ] `dir->Audio-Files` replaces `get-file-info` & `listFiles`
+- [ ] Reduce process-audio over vector of `Audio-File`s
+- [ ] Import `clear-tag` from `test-util.clj`
+- [ ] Make `validate-format` smart
 
 ## License
 

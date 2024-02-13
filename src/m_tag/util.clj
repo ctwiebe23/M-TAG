@@ -75,7 +75,7 @@
   (merge state {:total  (inc total)
                 :errors (conj errors message)}))
 
-(defn old-process-audio
+(defmulti process-audio
   "Confirms the given file is a compatable file with the proper naming
    convention (printing error message if not); if the process succeeds then it
    sets the audio tag of the given file and returns the given state with both
@@ -88,35 +88,11 @@
 
    If '-r' present in :opts and the given file is a directory then it runs
    itself on the given directory, otherwise it returns the given state."
-  [{opts :opts comps :comps :as state} file]
-  (let [info (get-file-info state file)]
-    (cond
-      (.isDirectory file)
-      (if-not (some #{"-r"} opts) state
-              (reduce old-process-audio state (. file listFiles)))
-      (not (some #{(info :type)} supported-types))
-      (failure state (str "ERROR: Invalid filetype at " (info :path) "\n"))
-      (not= (count (info :vals)) (count comps))
-      (failure state (str "ERROR: Invalid naming convention at " (info :path)
-                          "\n  Usage: " (naming-convention state) "\n"))
-      :else
-      (do (when-not (some #{"-t"} opts)
-            (set-tag file (info :vals) comps))
-          (when (some #{"-t" "-v"} opts)
-            (print-tag file comps))
-          (merge state {:tagged (inc (state :tagged))
-                        :total  (inc (state :total))})))))
-
-(defmulti process-audio
-  (fn [_ file]
+  (fn [state file]
     (cond
       (.isDirectory file)
       :directory
-      (some #{(-> file
-                  .getName
-                  (str/split #"\.")
-                  last)}
-            supported-types)
+      (some #{((get-file-info state file) :type)} supported-types)
       :supported)))
 
 (defmethod process-audio :directory
