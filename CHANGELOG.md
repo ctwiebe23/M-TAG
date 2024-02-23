@@ -5,11 +5,15 @@ change log follows the conventions of [keepachangelog.com].
 
 Uses Semantic Versioning.
 
-## [1.0.0] - TODO
+## 0.5.0 - 2024-02-22
 
 ### Added
 
-- Initial release
+- Option to clear tags
+
+### Fixed
+
+- Printed audio tags are now properly trimmed
 
 ## 0.4.0 - 2024-01-19
 
@@ -50,4 +54,3 @@ Uses Semantic Versioning.
 - Support for .mp3 files
 
 [keepachangelog.com]: http://keepachangelog.com/
-[1.0.0]: http://TODO.com/

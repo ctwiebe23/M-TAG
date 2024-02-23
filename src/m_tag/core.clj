@@ -13,6 +13,7 @@
    "-v" "Print tag information for each file (implied in -v)"
    "-s" "Silence errors"
    "-j" "Print the JAudioTagger log"
+   "-c" "Clear tags"
    "-f" (str "Change the expected format; must be final option"
              "\n      "
              "USAGE: -f <splitter (regex)> <componants> or -f <componant>")})
@@ -42,7 +43,7 @@
   (println message
            "\nUSAGE: -f <splitter (regex)> <componants> or -f <componant>"
            "\nCOMPONANTS:")
-  (run! #(println " " (first %)) (seq util/componant-map)))
+  (run! #(println " " (first %)) (seq util/Comp-map)))
 
 (defn validate-format
   "Takes a program state and a collection of strings representing a format,
@@ -53,11 +54,11 @@
     (empty? raw-format)
     (print-format-error "ERROR: No arguments given to -f")
     (= 1 (count raw-format))
-    (if-not (util/componant-map (first raw-format))
+    (if-not (util/Comp-map (first raw-format))
       (print-format-error "ERROR: Invalid componant given to -f")
       (merge state {:comps    raw-format
                     :splitter #"a^"}))
-    (reduce #(and %1 (util/componant-map %2)) true (rest raw-format))
+    (reduce #(and %1 (util/Comp-map %2)) true (rest raw-format))
     (merge state {:comps    (rest raw-format)
                   :splitter (re-pattern (first raw-format))})
     :else

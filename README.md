@@ -56,11 +56,12 @@ Can be used anywhere within the project:
 
 ## TODO
 
-- [ ] Create `Audio-File` record w/ file & file info
+- [x] Create `Audio-File` record w/ file & file info
 - [ ] `dir->Audio-Files` replaces `get-file-info` & `listFiles`
 - [ ] Reduce process-audio over vector of `Audio-File`s
-- [ ] Import `clear-tag` from `test-util.clj`
+- [x] Import `clear-tag` from `test-util.clj`
 - [ ] Make `validate-format` smart
+- [ ] Redo `validate-args` + sub-functions to be multi-arity functions
 
 ## License
 

@@ -21,7 +21,7 @@
       (some #{type} util/supported-types)
       (let [audio (AudioFileIO/read file)
             tag   (. audio getTagOrCreateAndSetDefault)]
-        (doseq [componant (seq util/componant-map)]
+        (doseq [componant (seq util/Comp-map)]
           (. tag (deleteField (:field-key (second componant)))))
         (AudioFileIO/write audio)))))
 

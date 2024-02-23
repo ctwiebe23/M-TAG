@@ -3,20 +3,25 @@
   (:import  (org.jaudiotagger.audio AudioFileIO)
             (org.jaudiotagger.tag   FieldKey)))
 
-(defrecord Componant
-  [field-key str-size])
+;; A record of an audio file.
+(defrecord Audio-Record
+           [file path type vals])
+
+;; A componant record.
+(defrecord Comp
+           [field-key str-size])
 
 ;; Additional fields can be found in the JAudioTagger javadoc.
-(def componant-map
-  {"album"        (Componant. FieldKey/ALBUM        "%-30s")
-   "album_artist" (Componant. FieldKey/ALBUM_ARTIST "%-50s")
-   "artist"       (Componant. FieldKey/ARTIST       "%-50s")
-   "disc_number"  (Componant. FieldKey/DISC_NO      "%-3s")
-   "total_discs"  (Componant. FieldKey/DISC_TOTAL   "%-3s")
-   "title"        (Componant. FieldKey/TITLE        "%-50s")
-   "track"        (Componant. FieldKey/TRACK        "%-3s")
-   "total_tracks" (Componant. FieldKey/TRACK_TOTAL  "%-3s")
-   "year"         (Componant. FieldKey/YEAR         "%-5s")})
+(def Comp-map
+  {"album"        (Comp. FieldKey/ALBUM        "%-30s")
+   "album_artist" (Comp. FieldKey/ALBUM_ARTIST "%-50s")
+   "artist"       (Comp. FieldKey/ARTIST       "%-50s")
+   "disc_number"  (Comp. FieldKey/DISC_NO      "%-3s")
+   "total_discs"  (Comp. FieldKey/DISC_TOTAL   "%-3s")
+   "title"        (Comp. FieldKey/TITLE        "%-50s")
+   "track"        (Comp. FieldKey/TRACK        "%-3s")
+   "total_tracks" (Comp. FieldKey/TRACK_TOTAL  "%-3s")
+   "year"         (Comp. FieldKey/YEAR         "%-5s")})
 
 (def supported-types
   ["mp3" "wav" "ogg" "flac"])
@@ -31,13 +36,14 @@
    tag."
   [file comps]
   (let [audio (AudioFileIO/read file)]
-    (run! #(printf (str "%s: " (:str-size (componant-map %)))
-                   (str/capitalize %)
-                   (.. audio
-                       getTagOrCreateDefault
-                       (getFirst (:field-key (componant-map %)))))
-          comps)
-    (println)))
+    (println
+     (str/trim
+      (reduce #(str %1 (format (str "%s: " (:str-size (Comp-map %2)))
+                               (str/capitalize %2)
+                               (.. audio
+                                   getTagOrCreateDefault
+                                   (getFirst (:field-key (Comp-map %2))))))
+              "" comps)))))
 
 (defn set-tag
   "Sets the tag of the given audio file according to the given vals and the
@@ -48,7 +54,7 @@
       (when (< i (count comps))
         (.. audio
             getTagOrCreateAndSetDefault
-            (setField (:field-key (componant-map (nth comps i)))
+            (setField (:field-key (Comp-map (nth comps i)))
                       (->> (vals i)
                            vector
                            (into-array String))))
@@ -69,6 +75,30 @@
      :vals (-> name
                (str/replace (str "." type) "")
                (str/split splitter))}))
+
+(defmulti clear-tag
+  "If the given file is a directory it runs itself on each file within the
+   directory; if the given file is a supported audio file it clears the tag of
+   the file."
+  (fn [state file]
+    (cond
+      (.isDirectory file)
+      :directory
+      (some #{((get-file-info state file) :type)} supported-types)
+      :supported)))
+
+(defmethod clear-tag :directory
+  [{opts :opts} file]
+  (when (some #{"-r"} opts)
+    (run! clear-tag (. file listFiles))))
+
+(defmethod clear-tag :supported
+  [_ file]
+  (let [audio (AudioFileIO/read file)
+        tag   (. audio getTagOrCreateAndSetDefault)]
+    (doseq [componant (seq Comp-map)]
+      (. tag (deleteField (:field-key (second componant)))))
+    (AudioFileIO/write audio)))
 
 (defn failure
   [{total :total errors :errors :as state} message]
@@ -107,7 +137,8 @@
       (failure state (str "ERROR: Invalid naming convention at " (info :path)
                           "\n  Usage: " (naming-convention state) "\n"))
       (do (when-not (some #{"-t"} opts)
-            (set-tag file (info :vals) comps))
+            (if (some #{"-c"} opts) (clear-tag state file)
+              (set-tag file (info :vals) comps)))
           (when (some #{"-t" "-v"} opts)
             (print-tag file comps))
           (merge state {:tagged (inc (state :tagged))
