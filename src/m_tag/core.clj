@@ -10,7 +10,7 @@
 (def opts-map
   {"-r" "Recursively operate on subfolders"
    "-t" "Execute a test run without edits, printing files and CURRENT tags"
-   "-v" "Print tag information for each file (implied in -v)"
+   "-v" "Print tag information for each file (implied in -t)"
    "-s" "Silence errors"
    "-j" "Print the JAudioTagger log"
    "-c" "Clear tags"

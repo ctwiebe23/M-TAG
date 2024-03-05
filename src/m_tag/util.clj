@@ -138,7 +138,7 @@
                           "\n  Usage: " (naming-convention state) "\n"))
       (do (when-not (some #{"-t"} opts)
             (if (some #{"-c"} opts) (clear-tag state file)
-              (set-tag file (info :vals) comps)))
+                (set-tag file (info :vals) comps)))
           (when (some #{"-t" "-v"} opts)
             (print-tag file comps))
           (merge state {:tagged (inc (state :tagged))
