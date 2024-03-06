@@ -62,6 +62,7 @@ Can be used anywhere within the project:
 - [x] Import `clear-tag` from `test-util.clj`
 - [ ] Make `validate-format` smart
 - [ ] Redo `validate-args` + sub-functions to be multi-arity functions
+- [ ] Remove `-` option from bash script
 
 ## License
 
