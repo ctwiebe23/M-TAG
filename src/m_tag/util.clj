@@ -30,6 +30,28 @@
   [{comps :comps}]
   (str (str/join " - " (map str/capitalize comps)) ".filetype"))
 
+(defn file->Record
+  "Converts the given file to a Audio Record"
+  [{source :source splitter :splitter} file]
+  (let [name (.getName file)
+        type (last (str/split name #"\."))]
+    (map->Audio-Record {:file file
+                        :path (str/replace (. file getPath)
+                                           (-> source
+                                               (. getPath)
+                                               (str java.io.File/separator))
+                                           "")
+                        :type (cond
+                                (.isDirectory file)
+                                :directory
+                                (not (some #{type} supported-types))
+                                :unsupported
+                                :else
+                                type)
+                        :vals (-> name
+                                  (str/replace (str "." type) "")
+                                  (str/split splitter))})))
+
 (defn print-tag
   "Prints the filepath of the given file relative to the source filepath, and
    then prints the current values of the relevant portions of the file's audio
@@ -38,11 +60,11 @@
   (let [audio (AudioFileIO/read file)]
     (println
      (str/trim
-      (reduce #(str %1 (format (str "%s: " (:str-size (Comp-map %2)))
+      (reduce #(str %1 (format (str "%s: " (.str-size (Comp-map %2)))
                                (str/capitalize %2)
                                (.. audio
                                    getTagOrCreateDefault
-                                   (getFirst (:field-key (Comp-map %2))))))
+                                   (getFirst (.field-key (Comp-map %2))))))
               "" comps)))))
 
 (defn set-tag
@@ -54,7 +76,7 @@
       (when (< i (count comps))
         (.. audio
             getTagOrCreateAndSetDefault
-            (setField (:field-key (Comp-map (nth comps i)))
+            (setField (.field-key (Comp-map (nth comps i)))
                       (->> (vals i)
                            vector
                            (into-array String))))
@@ -97,7 +119,7 @@
   (let [audio (AudioFileIO/read file)
         tag   (. audio getTagOrCreateAndSetDefault)]
     (doseq [componant (seq Comp-map)]
-      (. tag (deleteField (:field-key (second componant)))))
+      (. tag (deleteField (.field-key (second componant)))))
     (AudioFileIO/write audio)))
 
 (defn failure
