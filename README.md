@@ -63,6 +63,7 @@ Can be used anywhere within the project:
 - [ ] Make `validate-format` smart
 - [ ] Redo `validate-args` + sub-functions to be multi-arity functions
 - [ ] Remove `-` option from bash script
+- [ ] Break into smaller files, compartmentalize
 
 ## License
 
