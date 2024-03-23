@@ -1,56 +1,12 @@
 (ns m-tag.util
-  (:require [clojure.string :as str])
-  (:import  (org.jaudiotagger.audio AudioFileIO)
-            (org.jaudiotagger.tag   FieldKey)))
-
-;; A record of an audio file.
-(defrecord Audio-Record
-           [file path type vals])
-
-;; A componant record.
-(defrecord Comp
-           [field-key str-size])
-
-;; Additional fields can be found in the JAudioTagger javadoc.
-(def Comp-map
-  {"album"        (Comp. FieldKey/ALBUM        "%-30s")
-   "album_artist" (Comp. FieldKey/ALBUM_ARTIST "%-50s")
-   "artist"       (Comp. FieldKey/ARTIST       "%-50s")
-   "disc_number"  (Comp. FieldKey/DISC_NO      "%-3s")
-   "total_discs"  (Comp. FieldKey/DISC_TOTAL   "%-3s")
-   "title"        (Comp. FieldKey/TITLE        "%-50s")
-   "track"        (Comp. FieldKey/TRACK        "%-3s")
-   "total_tracks" (Comp. FieldKey/TRACK_TOTAL  "%-3s")
-   "year"         (Comp. FieldKey/YEAR         "%-5s")})
-
-(def supported-types
-  ["mp3" "wav" "ogg" "flac"])
+  (:require [clojure.string  :as str]
+            [m-tag.constants :refer [Comp-map
+                                     supported-types]])
+  (:import  (org.jaudiotagger.audio AudioFileIO)))
 
 (defn naming-convention
   [{comps :comps}]
   (str (str/join " - " (map str/capitalize comps)) ".filetype"))
-
-(defn file->Record
-  "Converts the given file to a Audio Record"
-  [{source :source splitter :splitter} file]
-  (let [name (.getName file)
-        type (last (str/split name #"\."))]
-    (map->Audio-Record {:file file
-                        :path (str/replace (. file getPath)
-                                           (-> source
-                                               (. getPath)
-                                               (str java.io.File/separator))
-                                           "")
-                        :type (cond
-                                (.isDirectory file)
-                                :directory
-                                (not (some #{type} supported-types))
-                                :unsupported
-                                :else
-                                type)
-                        :vals (-> name
-                                  (str/replace (str "." type) "")
-                                  (str/split splitter))})))
 
 (defn print-tag
   "Prints the filepath of the given file relative to the source filepath, and
