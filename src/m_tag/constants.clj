@@ -27,19 +27,19 @@
 
 ;; A componant record.
 (defrecord Comp
-           [field-key str-size])
+           [name field-key str-size])
 
 ;; Additional fields can be found in the JAudioTagger javadoc.
 (def Comp-map
-  {"album"        (Comp. FieldKey/ALBUM        "%-30s")
-   "album_artist" (Comp. FieldKey/ALBUM_ARTIST "%-50s")
-   "artist"       (Comp. FieldKey/ARTIST       "%-50s")
-   "disc_number"  (Comp. FieldKey/DISC_NO      "%-3s")
-   "total_discs"  (Comp. FieldKey/DISC_TOTAL   "%-3s")
-   "title"        (Comp. FieldKey/TITLE        "%-50s")
-   "track"        (Comp. FieldKey/TRACK        "%-3s")
-   "total_tracks" (Comp. FieldKey/TRACK_TOTAL  "%-3s")
-   "year"         (Comp. FieldKey/YEAR         "%-5s")})
+  {"album"        (Comp. "album"         FieldKey/ALBUM        "%-30s")
+   "album_artist" (Comp. "album_artist"  FieldKey/ALBUM_ARTIST "%-50s")
+   "artist"       (Comp. "artist"        FieldKey/ARTIST       "%-50s")
+   "disc_number"  (Comp. "disc_number"   FieldKey/DISC_NO      "%-3s")
+   "total_discs"  (Comp. "total_discs"   FieldKey/DISC_TOTAL   "%-3s")
+   "title"        (Comp. "title"         FieldKey/TITLE        "%-50s")
+   "track"        (Comp. "track"         FieldKey/TRACK        "%-3s")
+   "total_tracks" (Comp. "total_tracks"  FieldKey/TRACK_TOTAL  "%-3s")
+   "year"         (Comp. "year"          FieldKey/YEAR         "%-5s")})
 
 (def supported-types
   ["mp3" "wav" "ogg" "flac"])

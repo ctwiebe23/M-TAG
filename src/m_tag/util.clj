@@ -6,7 +6,10 @@
 
 (defn naming-convention
   [{comps :comps}]
-  (str (str/join " - " (map str/capitalize comps)) ".filetype"))
+  (str (->> comps
+            (map str/capitalize)
+            (str/join " - "))
+       ".filetype"))
 
 (defn print-tag
   "Prints the filepath of the given file relative to the source filepath, and
@@ -16,12 +19,12 @@
   (let [audio (AudioFileIO/read file)]
     (println
      (str/trim
-      (reduce #(str %1 (format (str "%s: " (.str-size (Comp-map %2)))
-                               (str/capitalize %2)
+      (reduce #(str %1 (format (str "%s: " (.str-size %2))
+                               (.name %2)
                                (.. audio
                                    getTagOrCreateDefault
-                                   (getFirst (.field-key (Comp-map %2))))))
-              "" comps)))))
+                                   (getFirst (.field-key %2)))))
+              "" (map Comp-map comps))))))
 
 (defn set-tag
   "Sets the tag of the given audio file according to the given vals and the
