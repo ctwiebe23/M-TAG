@@ -51,6 +51,7 @@ Can be used anywhere within the project:
 - [ ] Redo `validate-args` + sub-functions to be multi-arity functions
 - [x] Remove bash script
 - [x] Break into smaller files, compartmentalize
+- [ ] Move `print-tag` and `set-tag` to `Audio-Record`
 
 ## License
 
