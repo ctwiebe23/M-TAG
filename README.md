@@ -38,13 +38,11 @@ Can be used anywhere within the project:
 
 ## Examples
 
-    $ java -jar m-tag-1.0.0-standalone.jar ../../resources/test_files -v
-    =>
+    $ java -jar m-tag-1.0.0-standalone.jar ../../resources/test_files -v =>
 
 ## TODO
 
 - [x] Create `Audio-File` record w/ file & file info
-- [ ] `dir->Audio-Files` replaces `get-file-info` & `listFiles`
 - [ ] Reduce process-audio over vector of `Audio-File`s
 - [x] Import `clear-tag` from `test-util.clj`
 - [ ] Make `validate-format` smart
@@ -52,23 +50,33 @@ Can be used anywhere within the project:
 - [x] Remove bash script
 - [x] Break into smaller files, compartmentalize
 - [ ] Move `print-tag` and `set-tag` to `Audio-Record`
+- [ ] Remove `constants`
+- [ ] Search for list comprehensions
 
 ## License
 
-Copyright © 2023
+MIT
 
-This program and the accompanying materials are made available under the
-terms of the Eclipse Public License 2.0 which is available at
-[Eclipse.org].
+Copyright (c) 2024
 
-This Source Code may also be made available under the following Secondary
-Licenses when the conditions for such availability set forth in the Eclipse
-Public License, v. 2.0 are satisfied: GNU General Public License as published
-by the Free Software Foundation, either version 2 of the License, or (at your
-option) any later version, with the GNU Classpath Exception which is available
-at [GNU.org].
+Permission is hereby granted, free of charge, to any person obtaining a copy of
+this software and associated documentation files (the "Software"), to deal in
+the Software without restriction, including without limitation the rights to
+use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies
+of the Software, and to permit persons to whom the Software is furnished to do
+so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
 
 [Github]: http://example.com/FIXME
-[Eclipse.org]: http://www.eclipse.org/legal/epl-2.0
-[GNU.org]: https://www.gnu.org/software/classpath/license.html
+
 [Leiningen]: https://FIXME.com
