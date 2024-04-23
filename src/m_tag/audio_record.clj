@@ -7,7 +7,7 @@
            [file path type vals])
 
 (defn get-path
-  "Returns the path to the file relatve to the given source"
+  "Returns the path to the file relative to the given source"
   [file source]
   (str/replace (. file getPath)
                (-> source
