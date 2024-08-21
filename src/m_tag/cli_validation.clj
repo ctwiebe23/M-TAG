@@ -17,8 +17,8 @@
   "Prints a formatted error message regarding the given format."
   [message]
   (println message
-           "\nUSAGE: -f <splitter (regex)> <componants> or -f <componant>"
-           "\nCOMPONANTS:")
+           "\nUSAGE: -f <splitter (regex)> <fields> or -f <field>"
+           "\nFIELDS:")
   (run! #(println " " %) (keys tag/tag-map)))
 
 (defn validate-format
@@ -31,14 +31,14 @@
     (print-format-error "ERROR: No arguments given to -f")
     (= 1 (count raw-format))
     (if-not (tag/tag-map (first raw-format))
-      (print-format-error "ERROR: Invalid componant given to -f")
+      (print-format-error "ERROR: Invalid field given to -f")
       (merge state {:comps    raw-format
                     :splitter #"a^"}))
     (reduce #(and %1 (tag/tag-map %2)) true (rest raw-format))
     (merge state {:comps    (rest raw-format)
                   :splitter (re-pattern (first raw-format))})
     :else
-    (print-format-error "ERROR: Invalid componant given to -f")))
+    (print-format-error "ERROR: Invalid field given to -f")))
 
 (defn validate-opts
   "Validates each given option, if successful returns a program state, if
@@ -66,8 +66,9 @@
     (print-CLA-error (str "M'TAG - Tag audio files based on their filenames "
                           "(i.e. 'Title - Artist.mp3')"
                           "\nDEFAULT FORMAT: splitter: \""
-                          (state/initial-state :splitter) "\" componants: "
-                          (state/initial-state :comps)))
+                          (state/initial-state :splitter)
+                          "\" fields: "
+                          (state/initial-state :fields)))
     (not (.isDirectory (io/file (first args))))
     (print-CLA-error "ERROR: Given filepath not valid")
     :else
