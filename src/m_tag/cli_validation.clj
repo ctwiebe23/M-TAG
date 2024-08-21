@@ -1,7 +1,7 @@
 (ns m-tag.cli-validation
   (:gen-class)
   (:require [clojure.java.io      :as io]
-            [m-tag.tag-componants :as tcomp]
+            [m-tag.tag-componants :as tag]
             [m-tag.program-state  :as state]
             [m-tag.cli-options    :as opt]))
 
@@ -11,7 +11,7 @@
   (println message
            "\nUSAGE: <filepath> <options>"
            "\nOPTIONS:")
-  (run! #(println (first %) "  " (second %)) (seq opt/opts-map)))
+  (run! #(println (first %) "  " (second %)) (seq opt/opt-map)))
 
 (defn print-format-error
   "Prints a formatted error message regarding the given format."
@@ -19,7 +19,7 @@
   (println message
            "\nUSAGE: -f <splitter (regex)> <componants> or -f <componant>"
            "\nCOMPONANTS:")
-  (run! #(println " " %) (keys tcomp/comp-map)))
+  (run! #(println " " %) (keys tag/tag-map)))
 
 (defn validate-format
   "Takes a program state and a collection of strings representing a format,
@@ -30,11 +30,11 @@
     (empty? raw-format)
     (print-format-error "ERROR: No arguments given to -f")
     (= 1 (count raw-format))
-    (if-not (tcomp/comp-map (first raw-format))
+    (if-not (tag/tag-map (first raw-format))
       (print-format-error "ERROR: Invalid componant given to -f")
       (merge state {:comps    raw-format
                     :splitter #"a^"}))
-    (reduce #(and %1 (tcomp/comp-map %2)) true (rest raw-format))
+    (reduce #(and %1 (tag/tag-map %2)) true (rest raw-format))
     (merge state {:comps    (rest raw-format)
                   :splitter (re-pattern (first raw-format))})
     :else
@@ -51,7 +51,7 @@
       (= "-f" (first untested))
       (validate-format (merge state {:opts (conj tested current-opts)})
                        (rest untested))
-      (opt/opts-map (first untested))
+      (opt/opt-map (first untested))
       (recur (rest untested) (cons (first untested) tested))
       :else
       (print-CLA-error "ERROR: Invalid option given"))))

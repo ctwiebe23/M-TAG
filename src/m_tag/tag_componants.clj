@@ -3,7 +3,7 @@
   (:import (org.jaudiotagger.tag FieldKey)))
 
 ;; Additional fields can be found in the JAudioTagger javadoc.
-(def comp-map
+(def tag-map
   {"album"        {:field-key FieldKey/ALBUM        :str-size "%-30s"}
    "album-artist" {:field-key FieldKey/ALBUM_ARTIST :str-size "%-50s"}
    "artist"       {:field-key FieldKey/ARTIST       :str-size "%-50s"}

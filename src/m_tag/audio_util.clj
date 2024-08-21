@@ -1,14 +1,15 @@
 (ns m-tag.audio-util
   (:require [clojure.string       :as str]
-            [m-tag.tag-componants :as tcomp])
+            [m-tag.tag-componants :as tag]
+            [m-tag.program-state  :as state])
   (:import  (org.jaudiotagger.audio AudioFileIO)))
 
 (def supported-types
   ["mp3" "wav" "ogg" "flac"])
 
 (defn naming-convention
-  [{comps :comps}]
-  (str (->> comps
+  [{fields :fields}]
+  (str (->> fields
             (map str/capitalize)
             (str/join " - "))
        ".filetype"))
@@ -17,34 +18,29 @@
   "Prints the filepath of the given file relative to the source filepath, and
    then prints the current values of the relevant portions of the file's audio
    tag."
-  [file comps]
-  (let [audio (AudioFileIO/read file)]
-    (println
-     (str/trim
-      (reduce #(str %1 (format (str "%s: " (get-in tcomp/comp-map
-                                                   [%2 :str-size]))
-                               %2
-                               (.. audio
-                                   getTagOrCreateDefault
-                                   (getFirst (get-in tcomp/comp-map
-                                                     [%2 :field-key])))))
-              ""
-              comps)))))
+  [file fields]
+  (let [audio     (AudioFileIO/read file)
+        print-all (comp println str/trim (partial str/join ""))]
+    (print-all (map #(format (str "%s: " (get-in tag/tag-map [% :str-size]))
+                             %
+                             (.. audio
+                                 getTagOrCreateDefault
+                                 (getFirst (get-in tag/tag-map
+                                                   [% :field-key]))))
+                    fields))))
 
 (defn set-tag
   "Sets the tag of the given audio file according to the given vals and the
    list of componants defined in tag-format."
-  [file vals comps]
-  (let [audio (AudioFileIO/read file)]
-    (loop [i 0]
-      (when (< i (count comps))
-        (.. audio
-            getTagOrCreateAndSetDefault
-            (setField (get-in tcomp/comp-map [(nth comps i) :field-key])
-                      (->> (vals i)
-                           vector
-                           (into-array String))))
-        (recur (inc i))))
+  [file vals fields]
+  (let [audio      (AudioFileIO/read file)
+        pairs      (map vector fields vals)
+        java-array (comp (partial into-array String) vector)]
+    (doseq [pair pairs]
+      (.. audio
+          getTagOrCreateAndSetDefault
+          (setField (get-in tag/tag-map [(first pair) :field-key])
+                    (java-array (second pair)))))
     (AudioFileIO/write audio)))
 
 (defn get-file-info
@@ -66,14 +62,9 @@
   [file]
   (let [audio (AudioFileIO/read file)
         tag   (. audio getTagOrCreateAndSetDefault)]
-    (doseq [componant (vals tcomp/comp-map)]
-      (. tag (deleteField (:field-key componant))))
+    (doseq [field (vals tag/tag-map)]
+      (. tag (deleteField (:field-key field))))
     (AudioFileIO/write audio)))
-
-(defn failure
-  [{total :total errors :errors :as state} message]
-  (merge state {:total  (inc total)
-                :errors (conj errors message)}))
 
 (defmulti process-audio
   "Confirms the given file is a compatable file with the proper naming
@@ -101,20 +92,22 @@
           (reduce process-audio state (. file listFiles))))
 
 (defmethod process-audio :supported
-  [{opts :opts comps :comps :as state} file]
+  [{opts :opts fields :fields :as state} file]
   (let [info (get-file-info state file)]
-    (if-not (= (count (info :vals)) (count comps))
-      (failure state (str "ERROR: Invalid naming convention at " (info :path)
+    (if-not (= (count (info :vals)) (count fields))
+      (state/failure state
+                     (str "ERROR: Invalid naming convention at " (info :path)
                           "\n  Usage: " (naming-convention state) "\n"))
       (do (when-not (some #{"-t"} opts)
             (if (some #{"-c"} opts) (clear-tag file)
-                (set-tag file (info :vals) comps)))
+                (set-tag file (info :vals) fields)))
           (when (some #{"-t" "-v"} opts)
-            (print-tag file comps))
+            (print-tag file fields))
           (merge state {:tagged (inc (state :tagged))
                         :total  (inc (state :total))})))))
 
 (defmethod process-audio :default
   [state file]
   (let [info (get-file-info state file)]
-    (failure state (str "ERROR: Invalid filetype at " (info :path) "\n"))))
+    (state/failure state
+                   (str "ERROR: Invalid filetype at " (info :path) "\n"))))

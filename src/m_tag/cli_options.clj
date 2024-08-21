@@ -2,7 +2,7 @@
   (:gen-class))
 
 ;; A map of valid options and their descriptive strings.
-(def opts-map
+(def opt-map
   {"-r" "Recursively operate on subfolders"
    "-t" "Execute a test run without edits, printing files and CURRENT tags"
    "-v" "Print tag information for each file (implied in -t)"
