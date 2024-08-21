@@ -1,4 +1,5 @@
 (ns m-tag.audio-util
+  (:gen-class)
   (:require [clojure.string       :as str]
             [m-tag.tag-componants :as tag]
             [m-tag.program-state  :as state])
