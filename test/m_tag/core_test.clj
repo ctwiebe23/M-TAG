@@ -1,6 +1,6 @@
 (ns m-tag.core-test
   (:require [m-tag.core      :refer [validate-args]]
-            [m-tag.util      :refer [set-tag
+            [m-tag.audio-util      :refer [set-tag
                                      process-audio]]
             [m-tag.test-util :refer [path
                                      clear-tags]]

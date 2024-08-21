@@ -38,20 +38,8 @@ Can be used anywhere within the project:
 
 ## Examples
 
-    $ java -jar m-tag-1.0.0-standalone.jar ../../resources/test_files -v =>
-
-## TODO
-
-- [x] Create `Audio-File` record w/ file & file info
-- [ ] Reduce process-audio over vector of `Audio-File`s
-- [x] Import `clear-tag` from `test-util.clj`
-- [ ] Make `validate-format` smart
-- [ ] Redo `validate-args` + sub-functions to be multi-arity functions
-- [x] Remove bash script
-- [x] Break into smaller files, compartmentalize
-- [ ] Move `print-tag` and `set-tag` to `Audio-Record`
-- [ ] Remove `constants`
-- [ ] Search for list comprehensions
+    $ java -jar m-tag-1.0.0-standalone.jar ../../resources/test_files -v
+    =>
 
 ## License
 
@@ -78,5 +66,4 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 [Github]: http://example.com/FIXME
-
 [Leiningen]: https://FIXME.com

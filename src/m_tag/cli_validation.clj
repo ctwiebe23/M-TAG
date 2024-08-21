@@ -1,9 +1,9 @@
 (ns m-tag.cli-validation
   (:gen-class)
-  (:require [clojure.java.io :as io]
-            [m-tag.constants :refer [initial-state
-                                     opts-map
-                                     Comp-map]]))
+  (:require [clojure.java.io      :as io]
+            [m-tag.tag-componants :as tcomp]
+            [m-tag.program-state  :as state]
+            [m-tag.cli-options    :as opt]))
 
 (defn print-CLA-error
   "Prints a formatted error message regarding CLA input."
@@ -11,7 +11,7 @@
   (println message
            "\nUSAGE: <filepath> <options>"
            "\nOPTIONS:")
-  (run! #(println (first %) "  " (second %)) (seq opts-map)))
+  (run! #(println (first %) "  " (second %)) (seq opt/opts-map)))
 
 (defn print-format-error
   "Prints a formatted error message regarding the given format."
@@ -19,7 +19,7 @@
   (println message
            "\nUSAGE: -f <splitter (regex)> <componants> or -f <componant>"
            "\nCOMPONANTS:")
-  (run! #(println " " (first %)) (seq Comp-map)))
+  (run! #(println " " %) (keys tcomp/comp-map)))
 
 (defn validate-format
   "Takes a program state and a collection of strings representing a format,
@@ -30,11 +30,11 @@
     (empty? raw-format)
     (print-format-error "ERROR: No arguments given to -f")
     (= 1 (count raw-format))
-    (if-not (Comp-map (first raw-format))
+    (if-not (tcomp/comp-map (first raw-format))
       (print-format-error "ERROR: Invalid componant given to -f")
       (merge state {:comps    raw-format
                     :splitter #"a^"}))
-    (reduce #(and %1 (Comp-map %2)) true (rest raw-format))
+    (reduce #(and %1 (tcomp/comp-map %2)) true (rest raw-format))
     (merge state {:comps    (rest raw-format)
                   :splitter (re-pattern (first raw-format))})
     :else
@@ -51,7 +51,7 @@
       (= "-f" (first untested))
       (validate-format (merge state {:opts (conj tested current-opts)})
                        (rest untested))
-      (opts-map (first untested))
+      (opt/opts-map (first untested))
       (recur (rest untested) (cons (first untested) tested))
       :else
       (print-CLA-error "ERROR: Invalid option given"))))
@@ -66,10 +66,10 @@
     (print-CLA-error (str "M'TAG - Tag audio files based on their filenames "
                           "(i.e. 'Title - Artist.mp3')"
                           "\nDEFAULT FORMAT: splitter: \""
-                          (initial-state :splitter) "\" componants: "
-                          (initial-state :comps)))
+                          (state/initial-state :splitter) "\" componants: "
+                          (state/initial-state :comps)))
     (not (.isDirectory (io/file (first args))))
     (print-CLA-error "ERROR: Given filepath not valid")
     :else
-    (validate-opts (merge initial-state {:source (io/file (first args))})
+    (validate-opts (merge state/initial-state {:source (io/file (first args))})
                    (rest args))))

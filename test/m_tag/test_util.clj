@@ -2,7 +2,7 @@
   (:import  (org.jaudiotagger.audio AudioFileIO)
             (org.jaudiotagger.tag   FieldKey))
   (:require [m-tag.core      :as core]
-            [m-tag.util      :as util]
+            [m-tag.audio-util      :as util]
             [clojure.java.io :as io]
             [clojure.string  :as str]))
 

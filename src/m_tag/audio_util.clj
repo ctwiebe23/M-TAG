@@ -1,8 +1,10 @@
-(ns m-tag.util
-  (:require [clojure.string  :as str]
-            [m-tag.constants :refer [Comp-map
-                                     supported-types]])
+(ns m-tag.audio-util
+  (:require [clojure.string       :as str]
+            [m-tag.tag-componants :as tcomp])
   (:import  (org.jaudiotagger.audio AudioFileIO)))
+
+(def supported-types
+  ["mp3" "wav" "ogg" "flac"])
 
 (defn naming-convention
   [{comps :comps}]
@@ -19,12 +21,15 @@
   (let [audio (AudioFileIO/read file)]
     (println
      (str/trim
-      (reduce #(str %1 (format (str "%s: " (.str-size %2))
-                               (.name %2)
+      (reduce #(str %1 (format (str "%s: " (get-in tcomp/comp-map
+                                                   [%2 :str-size]))
+                               %2
                                (.. audio
                                    getTagOrCreateDefault
-                                   (getFirst (.field-key %2)))))
-              "" (map Comp-map comps))))))
+                                   (getFirst (get-in tcomp/comp-map
+                                                     [%2 :field-key])))))
+              ""
+              comps)))))
 
 (defn set-tag
   "Sets the tag of the given audio file according to the given vals and the
@@ -35,7 +40,7 @@
       (when (< i (count comps))
         (.. audio
             getTagOrCreateAndSetDefault
-            (setField (.field-key (Comp-map (nth comps i)))
+            (setField (get-in tcomp/comp-map [(nth comps i) :field-key])
                       (->> (vals i)
                            vector
                            (into-array String))))
@@ -57,28 +62,12 @@
                (str/replace (str "." type) "")
                (str/split splitter))}))
 
-(defmulti clear-tag
-  "If the given file is a directory it runs itself on each file within the
-   directory; if the given file is a supported audio file it clears the tag of
-   the file."
-  (fn [state file]
-    (cond
-      (.isDirectory file)
-      :directory
-      (some #{((get-file-info state file) :type)} supported-types)
-      :supported)))
-
-(defmethod clear-tag :directory
-  [{opts :opts} file]
-  (when (some #{"-r"} opts)
-    (run! clear-tag (. file listFiles))))
-
-(defmethod clear-tag :supported
-  [_ file]
+(defn clear-tag
+  [file]
   (let [audio (AudioFileIO/read file)
         tag   (. audio getTagOrCreateAndSetDefault)]
-    (doseq [componant (seq Comp-map)]
-      (. tag (deleteField (.field-key (second componant)))))
+    (doseq [componant (vals tcomp/comp-map)]
+      (. tag (deleteField (:field-key componant))))
     (AudioFileIO/write audio)))
 
 (defn failure
@@ -118,7 +107,7 @@
       (failure state (str "ERROR: Invalid naming convention at " (info :path)
                           "\n  Usage: " (naming-convention state) "\n"))
       (do (when-not (some #{"-t"} opts)
-            (if (some #{"-c"} opts) (clear-tag state file)
+            (if (some #{"-c"} opts) (clear-tag file)
                 (set-tag file (info :vals) comps)))
           (when (some #{"-t" "-v"} opts)
             (print-tag file comps))
