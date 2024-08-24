@@ -35,13 +35,12 @@
    list of componants defined in tag-format."
   [file vals fields]
   (let [audio      (AudioFileIO/read file)
-        pairs      (map vector fields vals)
         java-array (comp (partial into-array String) vector)]
-    (doseq [pair pairs]
+    (doseq [[field val] (map vector fields vals)]
       (.. audio
           getTagOrCreateAndSetDefault
-          (setField (get-in tag/tag-map [(first pair) :field-key])
-                    (java-array (second pair)))))
+          (setField (get-in tag/tag-map [field :field-key])
+                    (java-array val))))
     (AudioFileIO/write audio)))
 
 (defn get-file-info
