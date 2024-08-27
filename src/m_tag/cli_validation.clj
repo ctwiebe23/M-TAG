@@ -32,10 +32,10 @@
     (= 1 (count raw-format))
     (if-not (tag/tag-map (first raw-format))
       (print-format-error "ERROR: Invalid field given to -f")
-      (merge state {:comps    raw-format
+      (merge state {:fields   raw-format
                     :splitter #"a^"}))
     (reduce #(and %1 (tag/tag-map %2)) true (rest raw-format))
-    (merge state {:comps    (rest raw-format)
+    (merge state {:fields   (rest raw-format)
                   :splitter (re-pattern (first raw-format))})
     :else
     (print-format-error "ERROR: Invalid field given to -f")))
@@ -44,7 +44,8 @@
   "Validates each given option, if successful returns a program state, if
    unsuccessful prints an error message and returns nil."
   [{current-opts :opts :as state} raw-opts]
-  (loop [untested raw-opts tested []]
+  (loop [untested raw-opts
+         tested   []]
     (cond
       (empty? untested)
       (merge state {:opts (conj tested current-opts)})
@@ -61,16 +62,17 @@
    are valid options; returns a program state on a success, prints an error
    message and returns nil on a failure."
   [args]
-  (cond
-    (empty? args)
-    (print-CLA-error (str "M'TAG - Tag audio files based on their filenames "
-                          "(i.e. 'Title - Artist.mp3')"
-                          "\nDEFAULT FORMAT: splitter: \""
-                          (state/initial-state :splitter)
-                          "\" fields: "
-                          (state/initial-state :fields)))
-    (not (.isDirectory (io/file (first args))))
-    (print-CLA-error "ERROR: Given filepath not valid")
-    :else
-    (validate-opts (merge state/initial-state {:source (io/file (first args))})
-                   (rest args))))
+  (let [source (io/file (first args))]
+    (cond
+      (empty? args)
+      (print-CLA-error (str "M'TAG - Tag audio files based on their filenames "
+                            "(i.e. 'Title - Artist.mp3')"
+                            "\nDEFAULT FORMAT: splitter: \""
+                            (state/default-state :splitter)
+                            "\" fields: "
+                            (state/default-state :fields)))
+      (not (.isDirectory source))
+      (print-CLA-error "ERROR: Given filepath not valid")
+      :else
+      (validate-opts (merge state/default-state {:source source})
+                     (rest args)))))
