@@ -82,16 +82,16 @@
 
 (defmulti process-audio
   "Takes a program state and a file info and returns a program state.
-   
+
    Processes the given file differently depending on whether it's a :directory,
    a :supported file, or something else.
-   
+
    Directories will be either ignored or reduced over depending on whether the
    recursive option is set.
-   
+
    Supported files will have their tags set, cleared, printed, or some
    combination thereof depending on different opts.
-   
+
    Other files will be recorded as error messages."
   (fn [_ {type :type}]
     type))
