@@ -41,11 +41,11 @@
   [file fvals fields]
   (let [audio      (AudioFileIO/read file)
         java-array (comp (partial into-array String) vector)]
-    (doseq [[field val] (map vector fields fvals)]
+    (doseq [[field fval] (map vector fields fvals)]
       (.. audio
           getTagOrCreateAndSetDefault
           (setField (get-in tag/tag-map [field :field-key])
-                    (java-array val))))
+                    (java-array fval))))
     (AudioFileIO/write audio)))
 
 (defn clear-tag
@@ -100,8 +100,9 @@
   [{opts :opts :as state} {file :file}]
   (if-not (some #{"-r"} opts)
     state
-    (reduce process-audio state (map #(file->file-info state %)
-                                     (. file listFiles)))))
+    (let [files      (. file listFiles)
+          file-infos (map #(file->file-info state %) files)]
+      (reduce process-audio state file-infos))))
 
 (defmethod process-audio :unsupported
   [state {path :path}]
