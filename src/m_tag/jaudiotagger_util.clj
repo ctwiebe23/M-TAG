@@ -1,8 +1,8 @@
 (ns m-tag.jaudiotagger-util
   (:gen-class)
-  (:import  (org.jaudiotagger.tag TagOptionSingleton)
-            (java.util.logging    Logger
-                                  Level)))
+  (:import (org.jaudiotagger.tag TagOptionSingleton)
+           (java.util.logging    Logger
+                                 Level)))
 
 (defn configure-jat
   "Configure JAudioTagger so that it shrinks excess space allocated to tags if
