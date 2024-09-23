@@ -4,25 +4,47 @@
             [m-tag.cli-validation    :as cli]
             [m-tag.jaudiotagger-util :as jat]))
 
-;; GLOSSARY
-;; - state
-;;    Refers to the program state, a map of fields that contain information on
-;;    on the current state of the program (i.e. a list of errors, the number of
-;;    files processed, etc.).
-;; - source
-;;    Refers to the source directory that contains the target files.
-;; - args & opts
-;;    `args` refers to command line arguments, while `opts` refers to the given
-;;    options/flags (i.e. -v).
-;; - fields, fvals & splitter
-;;    `fields` refers to different tag fields (i.e. artist). `fvals` holds the
-;;    values of these fields. `splitter` holds a regex that is used to split
-;;    the file name into different `fvals`.
-;; - audio & file
-;;    `file` refers to the Java file object, while `audio` refers to the
-;;    JAudioTagger audio file object.
-;; - file-info
-;;    Refers to a map of information about a file (i.e. type, fvals, etc.).
+;; .========================[ GLOSSARY ]========================.
+;; | >> state                                                   |
+;; |                                                            |
+;; |  Refers to the program state, a map of fields that         |
+;; |  contain information on on the current state of the        |
+;; |  program (i.e. a list of errors, the number of files       |
+;; |  processed, etc.).                                         |
+;; |                                                            |
+;; |------------------------------------------------------------|
+;; | >> source                                                  |
+;; |                                                            |
+;; |  Refers to the source directory that contains the target   |
+;; |  files.                                                    |
+;; |                                                            |
+;; |------------------------------------------------------------|
+;; | >> args & opts                                             |
+;; |                                                            |
+;; |  `args` refers to command line arguments, while `opts`     |
+;; |  refers to the given options/flags (i.e. -v).              |
+;; |                                                            |
+;; |------------------------------------------------------------|
+;; | >> fields, fvals & splitter                                |
+;; |                                                            |
+;; |  `fields` refers to different tag fields (i.e. artist).    |
+;; |  `fvals` holds the values of these fields. `splitter`      |
+;; |  holds a regex that is used to split the file name into    |
+;; |  different `fvals`.                                        |
+;; |                                                            |
+;; |------------------------------------------------------------|
+;; | >> audio & file                                            |
+;; |                                                            |
+;; |  `file` refers to the Java file object, while `audio`      |
+;; |  refers to the JAudioTagger audio file object.             |
+;; |                                                            |
+;; |------------------------------------------------------------|
+;; | >> file-info                                               |
+;; |                                                            |
+;; |  Refers to a map of information about a file (i.e. type,   |
+;; |  fvals, etc.).                                             |
+;; |                                                            |
+;; `==========================[ END ]===========================`
 
 (defn -main
   "Checks if the given arguments are valid via validate-args, if so then it
