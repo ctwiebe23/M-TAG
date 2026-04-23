@@ -5,6 +5,12 @@ change log follows the conventions of [keepachangelog.com].
 
 Uses Semantic Versioning.
 
+## 0.6.1 - 2026-04-23
+
+### Added
+
+- A proper README file
+
 ## 0.6.0 - 2024-08-20
 
 ### Changed
