@@ -333,6 +333,9 @@ are:</p>
 <p>Leiningen can be used to run M’TAG anywhere within the project:</p>
 <pre><code>lein run FILEPATH [OPTIONS]</code></pre>
 <h1 id="options">OPTIONS</h1>
+<p>M’TAG does not have a proper argument parser, so options MUST come
+after the filepath and they must all be separate flags
+(e.g. <code>-r -j</code> and not <code>-rj</code>).</p>
 <dl>
 <dt><code>-r</code></dt>
 <dd>
@@ -375,6 +378,7 @@ Available fields are</p>
 <li>num-tracks</li>
 <li>artist</li>
 </ul>
+<p>If <code>-f</code> if supplied, it must be the final option.</p>
 </dd>
 </dl>
 </body>

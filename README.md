@@ -43,6 +43,9 @@ Leiningen can be used to run M'TAG anywhere within the project:
 
 # OPTIONS
 
+M'TAG does not have a proper argument parser, so options MUST come after the
+filepath and they must all be separate flags (e.g. `-r -j` and not `-rj`).
+
 `-r`
 :   Recursively operate on subfolders.
 
@@ -75,6 +78,8 @@ Leiningen can be used to run M'TAG anywhere within the project:
     * year
     * num-tracks
     * artist
+
+    If `-f` if supplied, it must be the final option.
 
 [Github]: https://github.com/ctwiebe23/m-tag
 [Leiningen]: https://leiningen.org
